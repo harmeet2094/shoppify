@@ -12,13 +12,16 @@ exports.getAddProduct = (req, res, next) => {
     const title = req.body.title;
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
-    const price = req.body.price;     
-    Product.create({
+    const price = req.body.price;
+    
+    //Association Used (Sequelize feature)
+    req.user.createProduct({
       title: title,
       price: price,
       imageUrl: imageUrl,
-      description: description
-    }).then(result => {
+      description: description,      
+    })
+    .then(result => {
       console.log('Product Added Successfully!');
       res.redirect('/admin/products');
 
@@ -75,7 +78,9 @@ exports.getAddProduct = (req, res, next) => {
 
 
   exports.getProducts = (req, res, next) => {
-    Product.findAll().then(products => {
+    req.user
+    .getProducts()
+    .then(products => {
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
