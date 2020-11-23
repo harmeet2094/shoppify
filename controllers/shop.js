@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  Product.fetchAll()
   .then(products => {
     res.render('shop/product-list', {
       prods: products,
@@ -16,30 +16,22 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-//  ---------------------------------------------------------------------
-  //Alternative method using WHERE in query                             |
-  // Product.findAll({ where: {id: prodId } }).then(product => {        |
-  //   res.render('shop/product-details', {                             |
-  //     product: product[0],                                           |
-  //     pageTitle: product[0].title,                                   |
-  //     path: '/products'                                              |
-  // })                                                                 | 
-  // .catch();                                                          |
-// ----------------------------------------------------------------------
-  
-  //sequlize 5 have findByPk instead of findById
-  Product.findByPk(prodId)
-  .then(product => {
-    res.render('shop/product-details', {
-      product: product,
-      pageTitle: product.title,
-      path: '/products'
+  Product.findById(prodId)
+    .then(product => {
+      console.log(product);
+      res.render('shop/product-details', {
+        product: product,
+        pageTitle: product.title,
+        path: '/products'
+      });
+    })
+    .catch(err => {
+      console.log(err)
     });
-  }).catch(err => console.log(err));
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.findAll()
+  Product.fetchAll()
   .then(products => {
     res.render('shop/index', {
       prods: products,
