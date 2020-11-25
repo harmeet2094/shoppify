@@ -13,18 +13,11 @@ exports.getAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    
-    //Association Used (Sequelize feature)
-    req.user.createProduct({
-      title: title,
-      price: price,
-      imageUrl: imageUrl,
-      description: description,      
-    })
+    const product = new Product(title, price, description, imageUrl, null, req.user._id);  
+    product.save()
     .then(result => {
-      console.log('Product Added Successfully!');
+      console.log('Product Added Successfully!', result);
       res.redirect('/admin/products');
-
     })
     .catch(err => {
       console.log(err);
@@ -37,7 +30,7 @@ exports.getAddProduct = (req, res, next) => {
       res.redirect('/');
     }
     const prodId = req.params.productId;
-    Product.findByPk(prodId)
+    Product.findById(prodId)
     .then(product => {
       if(!product){
         res.redirect('/');
@@ -57,17 +50,11 @@ exports.getAddProduct = (req, res, next) => {
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
     const updatedPrice = req.body.price;
-    const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
-    Product.findByPk(prodId)
-    .then( product => {
-      product.title = updatedTitle;
-      product.price = updatedPrice;
-      product.description = updatedDesc;
-      product.imageUrl = updatedImageUrl;
-      return product.save();      
-    })
-    .then(result => {
+    const updatedImageUrl = req.body.imageUrl;
+    const product = new Product(updatedTitle, updatedPrice, updatedDesc, updatedImageUrl, prodId);
+
+    product.save().then(result => {
       res.redirect('/admin/products');
       console.log('Product Updated Successfully');
     })
@@ -77,9 +64,8 @@ exports.getAddProduct = (req, res, next) => {
   };
 
 
-  exports.getProducts = (req, res, next) => {
-    req.user
-    .getProducts()
+  exports.getProducts = (req, res, next) => {    
+    Product.fetchAll()
     .then(products => {
       res.render('admin/products', {
         prods: products,
@@ -93,10 +79,8 @@ exports.getAddProduct = (req, res, next) => {
 
   exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findByPk(prodId).then(product => {
-      return product.destroy();
-    })
-    .then(result => {
+    Product.deleteById(prodId)
+    .then(() => {
       res.redirect('/admin/products');
       console.log('Product Deleted');
     })

@@ -18,8 +18,10 @@ router.post('/add-product', adminController.postAddProduct);
 //admin/edit-product => GET
 router.get('/edit-product/:productId', adminController.getEditProduct);
 
+//admin/edit-product  == Update Edited Product
 router.post('/edit-product', adminController.postEditProduct);
 
+//admin/delete === delete product
 router.post('/delete-product', adminController.postDeleteProduct);
 
 module.exports = router;
